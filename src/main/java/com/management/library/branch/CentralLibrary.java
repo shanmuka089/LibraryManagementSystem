@@ -11,6 +11,7 @@ import com.management.library.service.ReservationSupport;
 import com.management.library.service.SearchSupport;
 
 import java.util.List;
+import java.util.Set;
 
 public class CentralLibrary extends LibraryBranch
 {
@@ -42,7 +43,7 @@ public class CentralLibrary extends LibraryBranch
     }
 
     @Override
-    public List<BookCopy> searchBook(SearchQuery searchQuery)
+    public Set<BookCopy> searchBook(SearchQuery searchQuery)
     {
         verifySearch();
         return searchSupport.search(searchQuery, inventorySupport);

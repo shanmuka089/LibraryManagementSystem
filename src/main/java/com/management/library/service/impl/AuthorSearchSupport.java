@@ -6,19 +6,20 @@ import com.management.library.inventory.InventorySupport;
 import com.management.library.service.SearchSupport;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AuthorSearchSupport implements SearchSupport
 {
 
     @Override
-    public List<BookCopy> search(SearchQuery searchQuery, InventorySupport inventorySupport)
+    public Set<BookCopy> search(SearchQuery searchQuery, InventorySupport inventorySupport)
     {
         System.out.println("Searching for books by author: " + searchQuery.getAuthor());
         return inventorySupport.getAllBookCopies()
                 .stream()
                 .filter(bookCopy -> searchQuery.getAuthor().equals(bookCopy.getBook().getAuthor()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
 }

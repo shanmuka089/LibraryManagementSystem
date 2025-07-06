@@ -31,4 +31,10 @@ public class BookCopy
     {
         this.book = book;
     }
+    
+    @Override
+    public int hashCode()
+    {
+        return copyId != null ? copyId.hashCode() : 0;
+    }
 }

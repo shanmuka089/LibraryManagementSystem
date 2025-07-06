@@ -2,13 +2,12 @@ package com.management.library.inventory;
 
 import com.management.library.entity.BookCopy;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LibraryInventoryImpl implements InventorySupport
 {
-    protected Map<String, List<BookCopy>> inventoryBooks;
+    protected Map<String, Set<BookCopy>> inventoryBooks;
     
     public LibraryInventoryImpl()
     {
@@ -17,27 +16,28 @@ public class LibraryInventoryImpl implements InventorySupport
     
     public void addBookCopy(String ISBN, BookCopy bookCopy)
     {
-        this.inventoryBooks.computeIfAbsent(ISBN, k -> new java.util.ArrayList<>()).add(bookCopy);
+        this.inventoryBooks.computeIfAbsent(ISBN, k -> new HashSet<>()).add(bookCopy);
     }
 
     @Override
     public void updateBookCopy(String isbn, BookCopy bookCopy)
     {
-        List<BookCopy> copies = this.inventoryBooks.get(isbn);
+        Set<BookCopy> copies = this.inventoryBooks.get(isbn);
         if (copies != null) {
-            for (int i = 0; i < copies.size(); i++) {
-                if (copies.get(i).getCopyId().equals(bookCopy.getCopyId())) {
-                    copies.set(i, bookCopy);
-                    return;
-                }
-            }
+
+            copies.stream().filter(c -> c.getCopyId().equals(bookCopy.getCopyId()))
+                    .findFirst()
+                    .ifPresent(existingCopy -> {
+                        copies.remove(existingCopy);
+                        copies.add(bookCopy);
+                    });
         }
         addBookCopy(isbn, bookCopy);
     }
 
     public boolean removeBookCopy(String ISBN, BookCopy bookCopy)
     {
-        List<BookCopy> copies = this.inventoryBooks.get(ISBN);
+        Set<BookCopy> copies = this.inventoryBooks.get(ISBN);
         if (copies != null) {
             if(copies.isEmpty()) {
                 this.inventoryBooks.remove(ISBN);
@@ -48,29 +48,29 @@ public class LibraryInventoryImpl implements InventorySupport
         return false;
     }
 
-    public List<BookCopy> getBookCopies(String ISBN)
+    public Set<BookCopy> getBookCopies(String ISBN)
     {
-        return this.inventoryBooks.getOrDefault(ISBN, new java.util.ArrayList<>());
+        return this.inventoryBooks.getOrDefault(ISBN, new HashSet<>());
     }
     
-    public List<BookCopy> getAllBookCopies()
+    public Set<BookCopy> getAllBookCopies()
     {
         return this.inventoryBooks.values().stream()
-                .flatMap(List::stream)
-                .toList();
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     public boolean isBookAvailable(String ISBN)
     {
-        List<BookCopy> copies = this.inventoryBooks.get(ISBN);
+        Set<BookCopy> copies = this.inventoryBooks.get(ISBN);
         return copies != null && !copies.isEmpty();
     }
 
     public BookCopy getBookCopy(String ISBN)
     {
-        List<BookCopy> copies = this.inventoryBooks.get(ISBN);
+        Set<BookCopy> copies = this.inventoryBooks.get(ISBN);
         if (copies != null && !copies.isEmpty()) {
-            BookCopy bookCopy =  copies.get(0);
+            BookCopy bookCopy =  copies.iterator().next();
             removeBookCopy(ISBN, bookCopy);
             return bookCopy;
         }
