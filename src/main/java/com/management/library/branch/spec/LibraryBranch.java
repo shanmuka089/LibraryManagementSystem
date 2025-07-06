@@ -5,12 +5,12 @@ import com.management.library.entity.BorrowedBook;
 import com.management.library.entity.Learner;
 import com.management.library.entity.SearchQuery;
 import com.management.library.inventory.InventorySupport;
-import com.management.library.observer.BookNotifier;
 import com.management.library.service.BorrowingSupport;
 import com.management.library.service.ReservationSupport;
 import com.management.library.service.SearchSupport;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class LibraryBranch
 {
@@ -35,7 +35,7 @@ public abstract class LibraryBranch
     public abstract void addBook(BookCopy bookCopy);
     public abstract void removeBook(BookCopy bookCopy);
     public abstract void updateBook(BookCopy bookCopy);
-    public abstract List<BookCopy> searchBook(SearchQuery searchQuery);
+    public abstract Set<BookCopy> searchBook(SearchQuery searchQuery);
     public abstract void checkOutBook(BookCopy copy, Learner learner);
     public abstract void returnBook(BookCopy copy, Learner learner);
     public abstract void reserveBook(String isbn, Learner learner);
